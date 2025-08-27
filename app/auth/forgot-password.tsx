@@ -4,7 +4,7 @@ import { FormInput } from "@/components/form";
 import { useRouter } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
 
-export default function SignUp() {
+export default function ForgotPassword() {
   const router = useRouter();
 
   return (
@@ -19,7 +19,7 @@ export default function SignUp() {
         </TouchableOpacity>
 
         {/* Title */}
-        <Text className="heading-lg mb-8">Sign Up</Text>
+        <Text className="heading-lg mb-8">Forgot Password</Text>
 
         {/* Email */}
         <Text className="label mb-2">Email Address</Text>
@@ -29,21 +29,13 @@ export default function SignUp() {
           keyboardType="email-address"
         />
 
-        {/* Password */}
-        <Text className="label mt-4 mb-2">Password</Text>
-        <FormInput icon="lock" placeholder="••••••••" secureTextEntry />
-
-        {/* Confirm Password */}
-        <Text className="label mt-4 mb-2">Confirm Password</Text>
-        <FormInput icon="lock" placeholder="••••••••" secureTextEntry />
-
-        {/* Next Button */}
+        {/* Submit Button */}
         <TouchableOpacity
           className="btn-primary w-full mt-6 py-3 px-4"
-          onPress={() => router.push("/verify-code")}
+          onPress={() => router.push("/auth/new-password-success")} // TODO: Change to handleSubmit
         >
           <Text className="text-white text-center text-base font-medium">
-            Next
+            Send Reset Code
           </Text>
         </TouchableOpacity>
       </View>

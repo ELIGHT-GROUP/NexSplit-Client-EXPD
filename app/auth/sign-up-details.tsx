@@ -42,7 +42,7 @@ export default function SignUpDetails() {
         <FormInput icon="phone" placeholder="Contact number" keyboardType="phone-pad" />
 
         {/* Next Button */}
-        <TouchableOpacity className="btn-primary w-full mt-6 py-3 px-4" onPress={() => router.push("/sign-up")}>
+        <TouchableOpacity className="btn-primary w-full mt-6 py-3 px-4" onPress={() => router.push("/auth/sign-up")}>
           <Text className="text-white text-center text-base font-medium">
             Next
           </Text>

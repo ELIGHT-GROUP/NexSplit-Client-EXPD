@@ -65,7 +65,7 @@ export const nex : nex[] = [
         image: "https://cdn4.iconfinder.com/data/icons/social-media-2070/140/_spotify-512.png",
     },
     {
-        id: 1,
+        id: 7,
         title: "Groceries",
         date: "2025-08-20",
         description: "Weekly grocery shopping at supermarket",

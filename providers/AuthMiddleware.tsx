@@ -12,7 +12,7 @@ export const AuthMiddleware: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     if (!loading && !token) {
-      router.replace("/(auth)/sign-in");
+      router.replace("/auth/sign-in");
     }
   }, [loading, token, router]);
 

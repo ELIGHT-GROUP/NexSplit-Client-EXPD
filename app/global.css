@@ -4,7 +4,7 @@
 
 /* === Colors === */
 .btn-primary {
-    @apply bg-gradient-to-r from-[#00AA5B] to-[#0ac000] text-white font-medium font-sf rounded-lg;
+    @apply bg-[#00AA5B] text-white font-medium font-sf rounded-lg;
 }
 
 .btn-orange {

@@ -73,7 +73,7 @@ export default function VerifyCode() {
 
         <TouchableOpacity
           className="btn-primary w-full mt-6 py-3 px-4"
-          onPress={() => router.push("/(auth)/auth-success")} // TODO: Change to handleSubmit
+          onPress={() => router.push("/auth/auth-success")} // TODO: Change to handleSubmit
         >
           <Text className="text-white text-center text-base font-medium">
             Verify

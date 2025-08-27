@@ -50,13 +50,13 @@ export default function SignIn() {
                 {/* New User */}
                 <View className="flex-row justify-center mt-6">
                     <Text className="text-gray">I’m a new user. </Text>
-                    <TouchableOpacity onPress={() => router.push("/sign-up-details")}>
+                    <TouchableOpacity onPress={() => router.push("/auth/sign-up-details")}>
                         <Text className="text-[#00AA5B] font-medium">Sign up</Text>
                     </TouchableOpacity>
                 </View>
 
                 {/* Forgot Password */}
-                <TouchableOpacity onPress={() => router.push("/forgot-password")}>
+                <TouchableOpacity onPress={() => router.push("/auth/forgot-password")}>
                     <Text className="text-gray text-center text-sm font-medium mt-4">Forgot Password?</Text>
                 </TouchableOpacity>
             </View>
