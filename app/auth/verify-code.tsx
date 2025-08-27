@@ -6,20 +6,29 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  TextInputProps,
+  ActivityIndicator,
 } from "react-native";
+import { useEmailVerification } from "@/services/query/auth.query";
+import { emailVerificationSchema } from "@/validation/auth.schema";
+import { useSearchParams } from "expo-router/build/hooks";
 
 export default function VerifyCode() {
   const router = useRouter();
+  const params = useSearchParams();
+  const { email } = Object.fromEntries(params);
 
   const [code, setCode] = useState<string[]>(["", "", "", "", "", ""]);
+  const [validationError, setValidationError] = useState<string>("");
   const inputsRef = useRef<(TextInput | null)[]>([]);
+
+  const { mutate: verifyEmail, isPending } = useEmailVerification();
 
   const handleChange = (text: string, index: number) => {
     if (/^\d$/.test(text) || text === "") {
       const newCode = [...code];
       newCode[index] = text;
       setCode(newCode);
+      setValidationError(""); // Clear validation error when user types
 
       if (text !== "" && index < 5) {
         inputsRef.current[index + 1]?.focus();
@@ -38,7 +47,26 @@ export default function VerifyCode() {
 
   const handleSubmit = () => {
     const enteredCode = code.join("");
-    console.log("Entered code:", enteredCode);
+
+    // Validate the data using Zod schema
+    try {
+      const validationData = {
+        email: email,
+        code: enteredCode,
+      };
+
+      emailVerificationSchema.parse(validationData);
+      setValidationError("");
+
+      // Call the API
+      verifyEmail(validationData);
+    } catch (error: any) {
+      if (error.errors && error.errors.length > 0) {
+        setValidationError(error.errors[0].message);
+      } else {
+        setValidationError("Please enter a valid 6-digit code");
+      }
+    }
   };
 
   return (
@@ -71,12 +99,23 @@ export default function VerifyCode() {
           ))}
         </View>
 
+        {validationError ? (
+          <Text className="text-red-500 text-sm mt-2 text-left">
+            {validationError}
+          </Text>
+        ) : null}
+
         <TouchableOpacity
           className="btn-primary w-full mt-6 py-3 px-4"
-          onPress={() => router.push("/auth/auth-success")} // TODO: Change to handleSubmit
+          onPress={handleSubmit}
+          disabled={isPending}
         >
           <Text className="text-white text-center text-base font-medium">
-            Verify
+            {isPending ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              "Verify"
+            )}
           </Text>
         </TouchableOpacity>
       </View>

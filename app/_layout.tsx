@@ -7,6 +7,7 @@ import {useEffect, useState} from "react";
 import "./global.css";
 import {AuthProvider} from "@/context/AuthContext";
 import {ReactQueryProvider} from "@/providers/ReactQueryProvider";
+import Toast from 'react-native-toast-message';
 
 ExpoSplashScreen.preventAutoHideAsync();
 
@@ -34,6 +35,7 @@ export default function RootLayout() {
             <AuthProvider>
                 <SafeScreen>
                     <Slot/>
+                    <Toast />
                 </SafeScreen>
             </AuthProvider>
         </ReactQueryProvider>

@@ -4,47 +4,47 @@
 
 /* === Colors === */
 .btn-primary {
-    @apply bg-[#00AA5B] text-white font-medium font-sf rounded-lg;
+  @apply bg-[#00AA5B] text-white font-medium font-sf rounded-lg;
 }
 
 .btn-orange {
-    @apply bg-[#FF6A3D] text-white font-medium font-sf rounded-lg;
+  @apply bg-[#FF6A3D] text-white font-medium font-sf rounded-lg;
 }
 
 .bg-light {
-    @apply bg-[#FFFFFF];
+  @apply bg-[#FFFFFF];
 }
 
 .bg-dark {
-    @apply bg-[#1C1C1C];
+  @apply bg-[#1C1C1C];
 }
 
 .bg-light-green {
-    @apply bg-[#EAF8F1];
+  @apply bg-[#EAF8F1];
 }
 
 .bg-light-gray {
-    @apply bg-[#F6F6F6];
+  @apply bg-[#F6F6F6];
 }
 
 /* === Typography === */
 .heading-lg {
-    @apply text-2xl font-extrabold font-sf text-[#1C1C1C];
+  @apply text-2xl font-extrabold font-sf text-[#1C1C1C];
 }
 
 .heading-md {
-    @apply text-xl font-bold font-sf text-[#1C1C1C];
+  @apply text-xl font-bold font-sf text-[#1C1C1C];
 }
 
 .body-text {
-    @apply text-base font-normal font-sf text-[#1C1C1C];
+  @apply text-base font-normal font-sf text-[#1C1C1C];
 }
 
 .label {
-    @apply text-sm font-medium font-sf text-[#8B8B8B];
+  @apply text-sm font-medium font-sf text-[#8B8B8B];
 }
 
 .no-outline:focus {
-    outline: none !important;
-    box-shadow: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }

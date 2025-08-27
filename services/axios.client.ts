@@ -3,7 +3,7 @@ import axios from "axios";
 import { getAuthToken, removeAuthToken } from "./storage-functions";
 
 const axiosClient = axios.create({
-  baseURL: process.env.EXPO_PUBLIC_BACKEND_URL || "",
+  baseURL: process.env.EXPO_PUBLIC_BACKEND_URL || "http://95.111.248.142:8080/api/v1",
   headers: { "Content-Type": "application/json" },
 });
 

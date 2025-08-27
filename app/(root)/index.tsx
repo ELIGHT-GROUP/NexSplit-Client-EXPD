@@ -13,6 +13,9 @@ export default function DumpPage() {
             <TouchableOpacity onPress={() => router.push("/main")}>
                 <Text>Main</Text>
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push("/auth/verify-code?email=test@test.com")}>
+                <Text>Verify Code</Text>
+            </TouchableOpacity>
 
 
           

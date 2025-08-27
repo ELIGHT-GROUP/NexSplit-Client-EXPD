@@ -3,58 +3,87 @@ import React from "react";
 import { Feather, AntDesign } from "@expo/vector-icons";
 import { nex } from "@/mock/nex";
 import { formatDate } from "@/utils/formatDate";
+import { LinearGradient } from "expo-linear-gradient";
+import { generateHorizontalGradientFromText } from "@/utils/gradientGenerator";
 
 export default function main() {
-  const ExpenseCard = ({ item }: { item: (typeof nex)[0] }) => (
-    <TouchableOpacity className="bg-white rounded-xl p-4 mb-4 shadow-sm border border-gray-100">
-      <View className="flex-row items-start justify-between mb-3">
-        <View className="flex-1">
-          <Text className="heading-md mb-1">{item.title}</Text>
-          <Text className="body-text text-gray mb-2" numberOfLines={2}>
-            {item.description}
-          </Text>
-          <Text className="label">{formatDate(item.date)}</Text>
-        </View>
-        <View className="w-12 h-12 bg-light-gray rounded-lg items-center justify-center ml-3">
-          <Image
-            source={{ uri: item.image }}
-            className="w-8 h-8 rounded"
-            defaultSource={require("@/assets/images/favicon.png")}
-          />
-        </View>
-      </View>
+  const ExpenseCard = ({ item }: { item: (typeof nex)[0] }) => {
+    // Generate gradient based on item title
+    const gradientConfig = generateHorizontalGradientFromText(item.title);
 
-      <View className="flex-row items-center justify-between">
-        <View className="flex-row -space-x-2">
-          {Array.from({ length: Math.min(item.members, 3) }, (_, index) => (
-            <View
-              key={index}
-              className="w-8 h-8 bg-[#00AA5B] rounded-full items-center justify-center border-2 border-white"
-            >
-              <Text className="text-white text-xs font-bold">
-                {["OS", "BH", "VI"][index]}
-              </Text>
-            </View>
-          ))}
-          {item.members > 3 && (
-            <View className="w-8 h-8 bg-light-gray rounded-full items-center justify-center border-2 border-white">
-              <Text className="text-gray text-xs font-bold">
-                +{item.members - 3}
-              </Text>
-            </View>
-          )}
-        </View>
+    return (
+      <TouchableOpacity className="bg-white rounded-xl mb-4 shadow-sm border border-gray-100 relative overflow-hidden">
+        {/* Background Gradient */}
+        <LinearGradient
+          colors={gradientConfig.colors as any}
+          start={gradientConfig.start}
+          end={gradientConfig.end}
+          className="absolute inset-0"
+        />
 
-        <View className="flex-row flex-wrap gap-1">
-          {item.tags.slice(0, 2).map((tag, index) => (
-            <View key={index} className="bg-light-green px-2 py-1 rounded-full">
-              <Text className="text-[#00AA5B] text-xs font-medium">{tag}</Text>
+        {/* White overlay for readability */}
+        <LinearGradient
+          colors={[
+            "rgba(255, 255, 255, 1.0)",
+            "rgba(255, 255, 255, 1.0)",
+            "rgba(255, 255, 255, 0.7)",
+            "rgba(255, 255, 255, 0.3)",
+          ]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          className="absolute inset-0"
+        />
+
+        {/* Content */}
+        <View className="relative flex-1 p-4">
+          <View className="flex-row items-start justify-between mb-3">
+            <View className="flex-1">
+              <Text className="heading-md mb-1">{item.title}</Text>
+              <Text className="body-text text-gray mb-2" numberOfLines={2}>
+                {item.description}
+              </Text>
+              <Text className="label">{formatDate(item.date)}</Text>
             </View>
-          ))}
+          </View>
+
+          <View className="flex-row items-center justify-between">
+            <View className="flex-row -space-x-2">
+              {Array.from({ length: Math.min(item.members, 3) }, (_, index) => (
+                <View
+                  key={index}
+                  className="w-8 h-8 bg-[#00AA5B] rounded-full items-center justify-center border-2 border-white"
+                >
+                  <Text className="text-white text-xs font-bold">
+                    {["OS", "BH", "VI"][index]}
+                  </Text>
+                </View>
+              ))}
+              {item.members > 3 && (
+                <View className="w-8 h-8 bg-light-gray rounded-full items-center justify-center border-2 border-white">
+                  <Text className="text-gray text-xs font-bold">
+                    +{item.members - 3}
+                  </Text>
+                </View>
+              )}
+            </View>
+
+            <View className="flex-row flex-wrap gap-1">
+              {item.tags.slice(0, 2).map((tag, index) => (
+                <View
+                  key={index}
+                  className="bg-light-green px-2 py-1 rounded-full"
+                >
+                  <Text className="text-[#00AA5B] text-xs font-medium">
+                    {tag}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          </View>
         </View>
-      </View>
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View className="flex-1 bg-light">
@@ -80,8 +109,6 @@ export default function main() {
         className="flex-1 px-6 pt-4"
         showsVerticalScrollIndicator={false}
       >
-       
-
         {/* Expense Cards Grid */}
         <View className="mb-20">
           {nex.map((item) => (
