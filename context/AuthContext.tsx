@@ -1,7 +1,6 @@
 // AuthContext.tsx
-import { useSecureStore } from '@/hooks/useSecureStore';
-import React, { createContext, useContext, useEffect, useState } from 'react';
-
+import { useSecureStore } from "@/hooks/useSecureStore";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 type AuthContextType = {
   token: string | null;
@@ -17,8 +16,11 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
 });
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { value, setSecureValue, deleteValue, getValue } = useSecureStore('authToken');
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const { value, setSecureValue, deleteValue, getValue } =
+    useSecureStore("refreshToken");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 // axiosClient.ts
 import axios from "axios";
-import { getAuthToken, removeAuthToken } from "./storage-functions";
+import { getAccessToken, removeAuthToken } from "./storage-functions";
 
 const axiosClient = axios.create({
   baseURL: process.env.EXPO_PUBLIC_BACKEND_URL || "http://95.111.248.142:8080/api/v1",
@@ -9,7 +9,7 @@ const axiosClient = axios.create({
 
 axiosClient.interceptors.request.use(
   async (config) => {
-    const token = await getAuthToken();
+    const token = await getAccessToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

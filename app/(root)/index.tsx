@@ -1,27 +1,52 @@
-import {View, Text, TouchableOpacity} from "react-native";
+import { View } from "react-native";
 import React from "react";
-import {useRouter} from "expo-router";
+import { nex } from "@/mock/nex";
+import {
+  TopNavigationBar,
+  ExpenseList,
+  FloatingActionButton,
+} from "@/components/sections/main_section";
 
-export default function DumpPage() {
-    const router = useRouter();
-    return (
-        <View>
-            <Text>DumpPage</Text>
-            <TouchableOpacity onPress={() => router.push("/auth/sign-in")}>
-                <Text>Login</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push("/main")}>
-                <Text>Main</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push("/auth/verify-code?email=test@test.com")}>
-                <Text>Verify Code</Text>
-            </TouchableOpacity>
+export default function index() {
+  const handleSearchPress = () => {
+    // Handle search functionality
+    console.log("Search pressed");
+  };
 
+  const handleNotificationPress = () => {
+    // Handle notification functionality
+    console.log("Notification pressed");
+  };
 
-          
+  const handleProfilePress = () => {
+    // Handle profile functionality
+    console.log("Profile pressed");
+  };
 
+  const handleExpensePress = (expenseId: number) => {
+    // Handle expense card press
+    console.log("Expense pressed:", expenseId);
+  };
 
+  const handleCreateNexPress = () => {
+    // Handle create new nex functionality
+    console.log("Create Nex pressed");
+  };
 
-        </View>
-    );
+  return (
+    <View className="flex-1 bg-light">
+      {/* Top Navigation Bar */}
+      <TopNavigationBar
+        onSearchPress={handleSearchPress}
+        onNotificationPress={handleNotificationPress}
+        onProfilePress={handleProfilePress}
+      />
+
+      {/* Main Content */}
+      <ExpenseList expenses={nex} onExpensePress={handleExpensePress} />
+
+      {/* Floating Action Button */}
+      <FloatingActionButton onPress={handleCreateNexPress} />
+    </View>
+  );
 }

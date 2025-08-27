@@ -1,29 +1,23 @@
 ```ts
-import React from 'react';
-import { View, Button, Text } from 'react-native';
-import { useSecureStore } from './useSecureStore';
+import React from "react";
+import { View, Button, Text } from "react-native";
+import { useSecureStore } from "./useSecureStore";
 
 export default function App() {
-  const { value, setSecureValue, getValue, deleteValue } = useSecureStore('authToken');
+  const { value, setSecureValue, getValue, deleteValue } = useSecureStore("");
 
   return (
     <View style={{ padding: 20 }}>
-      <Text>Stored Token: {value || 'No token stored'}</Text>
+      <Text>Stored Token: {value || "No token stored"}</Text>
 
       <Button
         title="Save Token"
-        onPress={() => setSecureValue('my-secret-token')}
+        onPress={() => setSecureValue("my-secret-token")}
       />
 
-      <Button
-        title="Get Token"
-        onPress={getValue}
-      />
+      <Button title="Get Token" onPress={getValue} />
 
-      <Button
-        title="Delete Token"
-        onPress={deleteValue}
-      />
+      <Button title="Delete Token" onPress={deleteValue} />
     </View>
   );
 }

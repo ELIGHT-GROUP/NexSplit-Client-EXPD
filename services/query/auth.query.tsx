@@ -2,6 +2,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { UserRegister, VerifyEmail, UserLogin } from "../endpoint/auth.service";
 import Toast from "react-native-toast-message";
+import { useSecureStore } from "@/hooks/useSecureStore";
+import { useAuth } from "@/context/AuthContext";
 
 export const useRegistration = () => {
   const queryClient = useQueryClient();
@@ -54,19 +56,31 @@ export const useEmailVerification = () => {
 export const useLogin = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
+  const { login } = useAuth();
   return useMutation({
     mutationFn: UserLogin,
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
-      Toast.show({
-        type: "success",
-        text1: "Login successful",
-        text2: "Welcome back!",
-      });
-      // TODO: Store JWT tokens in secure storage
-      router.push("/(root)");
+
+      if (response && response.refreshToken) {
+        await login(response.refreshToken);
+        Toast.show({
+          type: "success",
+          text1: "Login successful",
+          text2: "Welcome back!",
+        });
+        router.push("/(root)");
+      } else {
+        console.error("Invalid response structure:", response);
+        Toast.show({
+          type: "error",
+          text1: "Login failed",
+          text2: "Invalid response from server",
+        });
+      }
     },
     onError: (error: any) => {
+      console.log("Login error:", error);
       Toast.show({
         type: "error",
         text1: error.response?.data?.message || "Login failed",
