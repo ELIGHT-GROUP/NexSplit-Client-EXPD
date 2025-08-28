@@ -2,6 +2,7 @@ import {
   UserRegisterData,
   EmailVerificationData,
   LoginData,
+  RefreshTokenData,
 } from "@/constants/auth-api-types";
 import axiosClient from "../axios.client";
 
@@ -20,5 +21,15 @@ export const VerifyEmail = async (verificationData: EmailVerificationData) => {
 
 export const UserLogin = async (loginData: LoginData) => {
   const response = await axiosClient.post("/auth/login", loginData);
+  return response.data;
+};
+
+export const RefreshAccessToken = async (
+  refreshTokenData: RefreshTokenData
+) => {
+  const response = await axiosClient.post(
+    "/auth/refresh-token",
+    refreshTokenData
+  );
   return response.data;
 };

@@ -1,9 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { UserRegister, VerifyEmail, UserLogin } from "../endpoint/auth.service";
+import {
+  UserRegister,
+  VerifyEmail,
+  UserLogin,
+  RefreshAccessToken,
+} from "../endpoint/auth.service";
 import Toast from "react-native-toast-message";
-import { useSecureStore } from "@/hooks/useSecureStore";
 import { useAuth } from "@/context/AuthContext";
+import { saveTokens } from "../storage-functions";
 
 export const useRegistration = () => {
   const queryClient = useQueryClient();
@@ -63,6 +68,10 @@ export const useLogin = () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
 
       if (response && response.refreshToken) {
+        // Save both tokens if both are provided
+        if (response.accessToken && response.refreshToken) {
+          await saveTokens(response.accessToken, response.refreshToken);
+        }
         await login(response.refreshToken);
         Toast.show({
           type: "success",
@@ -86,6 +95,34 @@ export const useLogin = () => {
         text1: error.response?.data?.message || "Login failed",
         text2: "Please check your credentials and try again",
       });
+    },
+  });
+};
+
+export const useRefreshToken = () => {
+  const queryClient = useQueryClient();
+  const { login } = useAuth();
+
+  return useMutation({
+    mutationFn: RefreshAccessToken,
+    onSuccess: async (response) => {
+      if (response && response.accessToken) {
+        // Save both tokens if both are returned
+        if (response.refreshToken) {
+          await saveTokens(response.accessToken, response.refreshToken);
+          await login(response.refreshToken);
+        } else {
+          // If only access token is returned, just save it
+          await login(response.refreshToken || "");
+        }
+        // Optionally invalidate queries that might need fresh data
+        queryClient.invalidateQueries({ queryKey: ["users"] });
+      }
+    },
+    onError: (error: any) => {
+      console.log("Token refresh error:", error);
+      // If refresh fails, user should be logged out
+      // This will be handled by the axios interceptor
     },
   });
 };
