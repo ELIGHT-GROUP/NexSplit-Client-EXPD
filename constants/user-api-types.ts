@@ -12,3 +12,20 @@ export type UserProfile = {
   createdAt: string;
   modifiedAt: string;
 };
+
+export type UpdateUserProfileData = {
+  firstName: string;
+  lastName: string;
+  username: string;
+  contactNumber: string;
+};
+
+export type ChangePasswordData = {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+};
+
+export type RequestPasswordResetData = {
+  email: string;
+};

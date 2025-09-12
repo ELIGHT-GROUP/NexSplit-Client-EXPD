@@ -48,23 +48,27 @@ export default function ExpenseCard({ item, onPress }: ExpenseCardProps) {
       />
 
       {/* Content */}
-      <View className="relative flex-1 p-4">
-        <View className="flex-row items-start justify-between mb-3">
-          <View className="flex-1">
+      <View className="relative flex-1 p-4 pb-6">
+        {/* Top Section - Title, Description, and Date */}
+        <View className="flex-row items-start justify-between mb-4">
+          <View className="flex-1 mr-4">
             <Text className="heading-md mb-1">{item.title}</Text>
-            <Text className="body-text text-gray mb-2" numberOfLines={2}>
+            <Text className="body-text text-gray" numberOfLines={2}>
               {item.description}
             </Text>
-            <Text className="label">{formatDate(item.date)}</Text>
           </View>
+          <Text className="label text-right text-white">{formatDate(item.date)}</Text>
         </View>
 
+        {/* Bottom Section - Members and Tags */}
         <View className="flex-row items-center justify-between">
-          <View className="flex-row -space-x-2">
+          {/* Left side - Members */}
+          <View className="flex-row items-center" style={{ width: 80 }}>
             {Array.from({ length: Math.min(item.members, 3) }, (_, index) => (
               <View
                 key={index}
-                className="w-8 h-8 bg-[#00AA5B] rounded-full items-center justify-center border-2 border-white"
+                className="w-8 h-8 bg-[#00AA5B] rounded-full items-center justify-center border-2 border-white absolute"
+                style={{ left: index * 20 }}
               >
                 <Text className="text-white text-xs font-bold">
                   {["OS", "BH", "VI"][index]}
@@ -72,7 +76,10 @@ export default function ExpenseCard({ item, onPress }: ExpenseCardProps) {
               </View>
             ))}
             {item.members > 3 && (
-              <View className="w-8 h-8 bg-light-gray rounded-full items-center justify-center border-2 border-white">
+              <View
+                className="w-8 h-8 bg-light-gray rounded-full items-center justify-center border-2 border-white absolute"
+                style={{ left: 3 * 20 }}
+              >
                 <Text className="text-gray text-xs font-bold">
                   +{item.members - 3}
                 </Text>
@@ -80,6 +87,7 @@ export default function ExpenseCard({ item, onPress }: ExpenseCardProps) {
             )}
           </View>
 
+          {/* Right side - Tags */}
           <View className="flex-row flex-wrap gap-1">
             {item.tags.slice(0, 2).map((tag, index) => (
               <View

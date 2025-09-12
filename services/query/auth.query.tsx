@@ -5,6 +5,7 @@ import {
   VerifyEmail,
   UserLogin,
   RefreshAccessToken,
+  ResendEmailVerification,
 } from "../endpoint/auth.service";
 import Toast from "react-native-toast-message";
 import { useAuth } from "@/context/AuthContext";
@@ -22,7 +23,7 @@ export const useRegistration = () => {
         text1: "Registration successful",
         text2: "Please verify your code",
       });
-      router.push(`/auth/verify-code?email=${responce.data.email}`);
+      router.push(`/auth/verify-code?email=${responce.data.email}&type=register`);
     },
     onError: (error: any) => {
       Toast.show({
@@ -123,6 +124,27 @@ export const useRefreshToken = () => {
       console.log("Token refresh error:", error);
       // If refresh fails, user should be logged out
       // This will be handled by the axios interceptor
+    },
+  });
+};
+
+export const useResendEmailVerification = () => {
+  return useMutation({
+    mutationFn: ResendEmailVerification,
+    onSuccess: () => {
+      Toast.show({
+        type: "success",
+        text1: "Verification email sent",
+        text2: "Please check your inbox for the verification code",
+      });
+    },
+    onError: (error: any) => {
+      console.error("Resend email verification error:", error);
+      Toast.show({
+        type: "error",
+        text1: "Failed to resend verification email",
+        text2: error.response?.data?.message || "Please try again later",
+      });
     },
   });
 };

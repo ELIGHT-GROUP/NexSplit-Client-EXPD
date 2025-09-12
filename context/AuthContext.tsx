@@ -2,6 +2,7 @@
 import { useSecureStore } from "@/hooks/useSecureStore";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { UserProfile } from "@/constants/user-api-types";
+import { useQueryClient } from "@tanstack/react-query";
 
 type AuthContextType = {
   token: string | null;
@@ -30,6 +31,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     useSecureStore("refreshToken");
   const [loading, setLoading] = useState(true);
   const [user, setUserState] = useState<UserProfile | null>(null);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     (async () => {
@@ -38,13 +40,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     })();
   }, [getValue]);
 
+  // Listen to user profile cache changes and update context
+  useEffect(() => {
+    const unsubscribe = queryClient.getQueryCache().subscribe((event) => {
+      if (
+        event.query.queryKey[0] === "userProfile" &&
+        (event.type === "updated" || event.type === "added")
+      ) {
+        const userProfile = event.query.state.data as UserProfile;
+        if (userProfile) {
+          console.log("Setting user in AuthContext:", userProfile);
+          setUserState(userProfile);
+        }
+      }
+    });
+
+    return unsubscribe;
+  }, [queryClient]);
+
   const login = async (token: string) => {
     await setSecureValue(token);
   };
 
   const logout = async () => {
     await deleteValue();
-    setUserState(null); // Clear user data on logout
+    setUserState(null);
   };
 
   const setUser = (userData: UserProfile) => {

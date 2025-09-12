@@ -1,6 +1,7 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 // import { useRouter } from "expo-router";
-import { CreateExpenseGroup } from "../endpoint/nex.service";
+import { CreateExpenseGroup, GetExpenseGroups } from "../endpoint/nex.service";
+import { GetExpenseGroupsParams } from "@/constants/nex-api-types";
 import Toast from "react-native-toast-message";
 
 export const useCreateExpenseGroup = () => {
@@ -28,5 +29,15 @@ export const useCreateExpenseGroup = () => {
         text2: "Please try again",
       });
     },
+  });
+};
+
+export const useGetExpenseGroups = (params: GetExpenseGroupsParams = {}) => {
+  const { page = 0, size = 10 } = params;
+  return useQuery({
+    queryKey: ["expenseGroups", page, size],
+    queryFn: () => GetExpenseGroups({ page, size }),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: 2,
   });
 };

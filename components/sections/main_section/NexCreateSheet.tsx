@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,12 +10,14 @@ import Modal from "react-native-modal";
 import { AntDesign } from "@expo/vector-icons";
 import { FormInput, FormDropdown } from "@/components/form";
 import { CreateExpenseGroupData } from "@/constants/nex-api-types";
+import { nexCreateSchema } from "@/validation/nex.schema";
 
 interface NexCreateSheetProps {
   isOpen: boolean;
   setOpen: (open: boolean) => void;
   onSubmit?: (data: CreateExpenseGroupData) => void;
   isPending?: boolean;
+  isSuccess?: boolean;
 }
 
 export default function NexCreateSheet({
@@ -23,6 +25,7 @@ export default function NexCreateSheet({
   setOpen,
   onSubmit,
   isPending,
+  isSuccess,
 }: NexCreateSheetProps) {
   const [formData, setFormData] = useState<CreateExpenseGroupData>({
     name: "",
@@ -31,12 +34,14 @@ export default function NexCreateSheet({
     settlementType: "DETAILED",
     nexType: "PERSONAL",
   });
+  const [validationErrors, setValidationErrors] = useState<{
+    name?: string;
+    description?: string;
+  }>({});
 
-  const handleSubmit = () => {
-    if (formData.name.trim() && formData.description.trim()) {
-      onSubmit?.(formData);
-      // setOpen(false);
-      // Reset form
+  // Reset form and close modal on successful creation
+  useEffect(() => {
+    if (isSuccess) {
       setFormData({
         name: "",
         description: "",
@@ -44,6 +49,29 @@ export default function NexCreateSheet({
         settlementType: "DETAILED",
         nexType: "PERSONAL",
       });
+      setValidationErrors({});
+      setOpen(false);
+    }
+  }, [isSuccess, setOpen]);
+
+  const handleSubmit = () => {
+    // Clear previous validation errors
+    setValidationErrors({});
+
+    // Validate the data using Zod schema
+    try {
+      nexCreateSchema.parse(formData);
+      onSubmit?.(formData);
+    } catch (error: any) {
+      if (error.errors && error.errors.length > 0) {
+        const errors: { [key: string]: string } = {};
+        error.errors.forEach((err: any) => {
+          if (err.path) {
+            errors[err.path[0]] = err.message;
+          }
+        });
+        setValidationErrors(errors);
+      }
     }
   };
 
@@ -73,7 +101,7 @@ export default function NexCreateSheet({
       animationIn="slideInUp"
       animationOut="slideOutDown"
     >
-      <View className="bg-white rounded-t-[15px] min-h-[400px] max-h-[90%]">
+      <View className="bg-white rounded-t-[15px] h-[75%]">
         {/* Header with drag indicator */}
         <View className="pt-4 flex-row items-center justify-between px-5 pb-3 border-b border-gray-100">
           <Text className="heading-md text-[#333]">Create New Nex</Text>
@@ -89,7 +117,13 @@ export default function NexCreateSheet({
             icon="tag"
             placeholder="Nex Name"
             value={formData.name}
-            onChangeText={(text) => setFormData({ ...formData, name: text })}
+            onChangeText={(text) => {
+              setFormData({ ...formData, name: text });
+              if (validationErrors.name) {
+                setValidationErrors((prev) => ({ ...prev, name: undefined }));
+              }
+            }}
+            error={validationErrors.name}
           />
 
           {/* Description Input */}
@@ -97,9 +131,16 @@ export default function NexCreateSheet({
             icon="file-text"
             placeholder="Description"
             value={formData.description}
-            onChangeText={(text) =>
-              setFormData({ ...formData, description: text })
-            }
+            onChangeText={(text) => {
+              setFormData({ ...formData, description: text });
+              if (validationErrors.description) {
+                setValidationErrors((prev) => ({
+                  ...prev,
+                  description: undefined,
+                }));
+              }
+            }}
+            error={validationErrors.description}
           />
 
           {/* Settlement Type Dropdown */}
@@ -129,10 +170,12 @@ export default function NexCreateSheet({
               })
             }
           />
+        </ScrollView>
 
-          {/* Submit Button */}
+        {/* Fixed Bottom Button */}
+        <View className="p-5 border-t border-gray-100">
           <TouchableOpacity
-            className="btn-primary py-4 px-8 rounded-[10px] items-center mt-4"
+            className="btn-primary py-4 px-8 rounded-[10px] items-center"
             onPress={handleSubmit}
           >
             <Text className="text-white text-base font-semibold">
@@ -143,7 +186,7 @@ export default function NexCreateSheet({
               )}
             </Text>
           </TouchableOpacity>
-        </ScrollView>
+        </View>
       </View>
     </Modal>
   );

@@ -1,13 +1,15 @@
 import { View } from "react-native";
 import React, { useState } from "react";
-import { nex } from "@/mock/nex";
 import {
   TopNavigationBar,
   ExpenseList,
   FloatingActionButton,
 } from "@/components/sections/main_section";
 import NexCreateSheet from "@/components/sections/main_section/NexCreateSheet";
-import { useCreateExpenseGroup } from "@/services/query/nex.querty";
+import {
+  useCreateExpenseGroup,
+  useGetExpenseGroups,
+} from "@/services/query/nex.querty";
 import { CreateExpenseGroupData } from "@/constants/nex-api-types";
 import { useRouter } from "expo-router";
 
@@ -15,7 +17,22 @@ export default function index() {
   const [isCreateSheetOpen, setIsCreateSheetOpen] = useState(false);
   const router = useRouter();
 
-  const { mutate: createExpenseGroup, isPending } = useCreateExpenseGroup();
+  // Fetch expense groups from API
+  const {
+    data: expenseGroupsData,
+    isLoading,
+    error,
+  } = useGetExpenseGroups({ page: 0, size: 10 });
+
+  // Create expense group mutation
+  const {
+    mutate: createExpenseGroup,
+    isPending,
+    isSuccess,
+  } = useCreateExpenseGroup();
+
+  // Extract expense groups from API response
+  const expenseGroups = expenseGroupsData?.data?.data || [];
 
   const handleSearchPress = () => {
     // Handle search functionality
@@ -32,9 +49,11 @@ export default function index() {
     router.push("/(root)/profile");
   };
 
-  const handleExpensePress = (expenseId: number) => {
-    // Handle expense card press
+  const handleExpensePress = (expenseId: string) => {
+    // Handle expense card press - navigate to expense details
     console.log("Expense pressed:", expenseId);
+    // TODO: Navigate to expense details page
+    // router.push(`/(root)/expense/${expenseId}`);
   };
 
   const handleCreateNexPress = () => {
@@ -57,7 +76,12 @@ export default function index() {
       />
 
       {/* Main Content */}
-      <ExpenseList expenses={nex} onExpensePress={handleExpensePress} />
+      <ExpenseList
+        expenses={expenseGroups}
+        onExpensePress={handleExpensePress}
+        isLoading={isLoading}
+        error={error}
+      />
 
       {/* Floating Action Button */}
       <FloatingActionButton onPress={handleCreateNexPress} />
@@ -68,6 +92,7 @@ export default function index() {
         setOpen={setIsCreateSheetOpen}
         onSubmit={handleCreateNexOnSubmit}
         isPending={isPending}
+        isSuccess={isSuccess}
       />
     </View>
   );

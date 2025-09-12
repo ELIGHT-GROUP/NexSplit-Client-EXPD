@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   signUpDetailsSchema,
   SignUpDetailsFormData,
-} from "@/validation/auth.schema";
+} from "@/validation/user.schema";
 
 export default function SignUpDetails() {
   const router = useRouter();
@@ -22,9 +22,11 @@ export default function SignUpDetails() {
     mode: "onChange",
   });
 
-    const onSubmit = (data: SignUpDetailsFormData) => {
-      router.push(`/auth/sign-up?cn=${data.contactNumber}&fn=${data.firstName}&ln=${data.lastName}&un=${data.username}`);
-    };
+  const onSubmit = (data: SignUpDetailsFormData) => {
+    router.push(
+      `/auth/sign-up?cn=${data.contactNumber}&fn=${data.firstName}&ln=${data.lastName}&un=${data.username}`
+    );
+  };
 
   return (
     <View className="flex-1 items-center">

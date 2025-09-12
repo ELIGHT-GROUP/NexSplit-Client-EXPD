@@ -1,11 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  Modal,
-} from "react-native";
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
 interface DropdownOption {
@@ -31,18 +25,14 @@ export default function FormDropdown({
   placeholder = "Select an option",
 }: FormDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<View>(null);
-
-  // Close dropdown when clicking outside using Modal backdrop
-  const handleBackdropPress = () => {
-    setIsOpen(false);
-  };
 
   const selectedOption = options.find((option) => option.value === value);
 
   return (
-    <View className="mb-4" ref={dropdownRef}>
+    <View className="mb-4">
       <Text className="label mb-2">{label}</Text>
+
+      {/* Dropdown Trigger */}
       <TouchableOpacity onPress={() => setIsOpen(!isOpen)}>
         <View className="flex-row items-center py-2 border-b border-gray-200">
           <Feather name={icon} size={18} color="#8B8B8B" />
@@ -57,33 +47,35 @@ export default function FormDropdown({
         </View>
       </TouchableOpacity>
 
-      <Modal
-        visible={isOpen}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setIsOpen(false)}
-      >
-        <TouchableWithoutFeedback onPress={handleBackdropPress}>
-          <View className="flex-1 bg-black bg-opacity-50 justify-center items-center">
-            <TouchableWithoutFeedback>
-              <View className="bg-white rounded-lg shadow-lg mx-4 max-w-[300px] w-full">
-                {options.map((option) => (
-                  <TouchableOpacity
-                    key={option.value}
-                    className="px-4 py-3 border-b border-gray-100 last:border-b-0 active:bg-gray-50"
-                    onPress={() => {
-                      onValueChange(option.value);
-                      setIsOpen(false);
-                    }}
-                  >
-                    <Text className="body-text">{option.label}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
+      {/* Accordion Options */}
+      {isOpen && (
+        <View className="bg-gray-50 rounded-b-lg border-l border-r border-b border-gray-200">
+          {options.map((option, index) => (
+            <TouchableOpacity
+              key={option.value}
+              className={`px-4 py-3 ${
+                index !== options.length - 1 ? "border-b border-gray-200" : ""
+              } ${
+                option.value === value ? "bg-blue-50" : "active:bg-gray-100"
+              }`}
+              onPress={() => {
+                onValueChange(option.value);
+                setIsOpen(false);
+              }}
+            >
+              <Text
+                className={`body-text ${
+                  option.value === value
+                    ? "text-blue-600 font-medium"
+                    : "text-gray-700"
+                }`}
+              >
+                {option.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
     </View>
   );
 }

@@ -1,11 +1,38 @@
-import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { FormInput } from "@/components/form";
 import { useRouter } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
+import { useRequestPasswordReset } from "@/services/query/user.query";
+import { forgotPasswordSchema } from "@/validation/auth.schema";
 
 export default function ForgotPassword() {
   const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [validationError, setValidationError] = useState("");
+
+  const { mutate: requestPasswordReset, isPending } = useRequestPasswordReset();
+
+  const handleSubmit = () => {
+    // Clear previous validation errors
+    setValidationError("");
+
+    // Validate the data using Zod schema
+    try {
+      const validationData = {
+        email: email.trim(),
+      };
+
+      forgotPasswordSchema.parse(validationData);
+
+      // Call the API
+      requestPasswordReset(validationData.email);
+    } catch (error: any) {
+      if (error.errors && error.errors.length > 0) {
+        setValidationError(error.errors[0].message);
+      }
+    }
+  };
 
   return (
     <View className="flex-1 items-center">
@@ -27,15 +54,31 @@ export default function ForgotPassword() {
           icon="mail"
           placeholder="example@email.com"
           keyboardType="email-address"
+          value={email}
+          onChangeText={(text) => {
+            setEmail(text);
+            setValidationError(""); // Clear validation error when user types
+          }}
         />
+
+        {validationError ? (
+          <Text className="text-red-500 text-sm mt-2 text-left">
+            {validationError}
+          </Text>
+        ) : null}
 
         {/* Submit Button */}
         <TouchableOpacity
           className="btn-primary w-full mt-6 py-3 px-4"
-          onPress={() => router.push("/auth/new-password-success")} // TODO: Change to handleSubmit
+          onPress={handleSubmit}
+          disabled={isPending}
         >
           <Text className="text-white text-center text-base font-medium">
-            Send Reset Code
+            {isPending ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              "Send Reset Code"
+            )}
           </Text>
         </TouchableOpacity>
       </View>

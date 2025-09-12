@@ -1,6 +1,6 @@
 import { AntDesign } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,7 +8,10 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import { useEmailVerification } from "@/services/query/auth.query";
+import {
+  useEmailVerification,
+  useResendEmailVerification,
+} from "@/services/query/auth.query";
 import { emailVerificationSchema } from "@/validation/auth.schema";
 import { useSearchParams } from "expo-router/build/hooks";
 
@@ -19,9 +22,30 @@ export default function VerifyCode() {
 
   const [code, setCode] = useState<string[]>(["", "", "", "", "", ""]);
   const [validationError, setValidationError] = useState<string>("");
+  const [resendCooldown, setResendCooldown] = useState<number>(0);
   const inputsRef = useRef<(TextInput | null)[]>([]);
 
   const { mutate: verifyEmail, isPending } = useEmailVerification();
+  const { mutate: resendEmail, isPending: isResending } =
+    useResendEmailVerification();
+
+  // Cooldown timer effect
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
+    if (resendCooldown > 0) {
+      interval = setInterval(() => {
+        setResendCooldown((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [resendCooldown]);
+
+  const handleResendEmail = () => {
+    if (resendCooldown === 0 && email) {
+      resendEmail(email);
+      setResendCooldown(30); // Start 30-second cooldown
+    }
+  };
 
   const handleChange = (text: string, index: number) => {
     if (/^\d$/.test(text) || text === "") {
@@ -118,6 +142,31 @@ export default function VerifyCode() {
             )}
           </Text>
         </TouchableOpacity>
+
+        {/* Resend Email Text */}
+        <View className="mt-6 items-center">
+          <Text className="text-gray-600 text-sm mb-3">
+            Didn't receive the code?{" "}
+            <TouchableOpacity
+              onPress={handleResendEmail}
+              disabled={resendCooldown > 0 || isResending}
+            >
+              <Text
+                className={`text-sm font-medium ${
+                  resendCooldown > 0 || isResending
+                    ? "text-gray-400"
+                    : "text-primary underline"
+                }`}
+              >
+                {isResending
+                  ? "Sending..."
+                  : resendCooldown > 0
+                  ? `Resend in ${resendCooldown}s`
+                  : "Resend Code"}
+              </Text>
+            </TouchableOpacity>
+          </Text>
+        </View>
       </View>
     </View>
   );

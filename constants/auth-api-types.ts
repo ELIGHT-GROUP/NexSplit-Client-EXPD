@@ -20,3 +20,25 @@ export type LoginData = {
 export type RefreshTokenData = {
   refreshToken: string;
 };
+
+export type ResendEmailVerificationData = {
+  email: string;
+};
+
+export type AuthResponse = {
+  accessToken?: string;
+  refreshToken: string;
+  user?: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+  };
+};
+
+export type ApiResponse<T = any> = {
+  success: boolean;
+  message: string;
+  data?: T;
+  timestamp: string;
+};
